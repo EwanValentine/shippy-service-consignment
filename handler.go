@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"github.com/pkg/errors"
 	pb "github.com/EwanValentine/shippy-service-consignment/proto/consignment"
 	vesselProto "github.com/EwanValentine/shippy-service-vessel/proto/vessel"
 )
@@ -11,7 +11,6 @@ type handler struct {
 	repository
 	vesselClient vesselProto.VesselServiceClient
 }
-
 
 // CreateConsignment - we created just one method on our service,
 // which is a create method, which takes a context and a request as an
@@ -24,7 +23,10 @@ func (s *handler) CreateConsignment(ctx context.Context, req *pb.Consignment, re
 		MaxWeight: req.Weight,
 		Capacity: int32(len(req.Containers)),
 	})
-	log.Printf("Found vessel: %s \n", vesselResponse.Vessel.Name)
+	if vesselResponse == nil {
+		return errors.New("error fetching vessel, returned nil")
+	}
+
 	if err != nil {
 		return err
 	}
@@ -34,7 +36,7 @@ func (s *handler) CreateConsignment(ctx context.Context, req *pb.Consignment, re
 	req.VesselId = vesselResponse.Vessel.Id
 
 	// Save our consignment
-	if err = s.repository.Create(req); err != nil {
+	if err = s.repository.Create(ctx, MarshalConsignment(req)); err != nil {
 		return err
 	}
 
@@ -45,10 +47,10 @@ func (s *handler) CreateConsignment(ctx context.Context, req *pb.Consignment, re
 
 // GetConsignments -
 func (s *handler) GetConsignments(ctx context.Context, req *pb.GetRequest, res *pb.Response) error {
-	consignments, err := s.repository.GetAll()
+	consignments, err := s.repository.GetAll(ctx)
 	if err != nil {
 		return err
 	}
-	res.Consignments = consignments
+	res.Consignments = UnmarshalConsignmentCollection(consignments)
 	return nil
 }

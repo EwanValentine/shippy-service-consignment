@@ -4,9 +4,7 @@ go 1.12
 
 require (
 	github.com/EwanValentine/shippy-service-vessel v0.0.0-20190411190551-a21f54f4c7fa
-	github.com/armon/circbuf v0.0.0-20190214190532-5111143e8da2 // indirect
 	github.com/golang/protobuf v1.3.1
-	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/micro/go-micro v1.1.0
 	github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect

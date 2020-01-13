@@ -26,11 +26,12 @@ func main() {
 	if uri == "" {
 		uri = defaultHost
 	}
-	client, err := CreateClient(uri)
+
+	client, err := CreateClient(context.Background(), uri, 0)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer client.Disconnect(context.TODO())
+	defer client.Disconnect(context.Background())
 
 	consignmentCollection := client.Database("shippy").Collection("consignments")
 
